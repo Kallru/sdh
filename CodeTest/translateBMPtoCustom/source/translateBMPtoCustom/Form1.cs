@@ -14,6 +14,7 @@ namespace translateBMPtoCustom
 {
     public partial class Form1 : Form
     {
+        private Bitmap m_sourceImage;
         public Form1()
         {
             InitializeComponent();
@@ -97,6 +98,7 @@ namespace translateBMPtoCustom
                         }
                     }
 
+                    m_sourceImage = image;
                     pictureBox1.Image = image;
                 }
             }
@@ -116,6 +118,55 @@ namespace translateBMPtoCustom
             {
                 LoadMyFormat( openFileDialog1.FileName );
             }
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            // var bitmapImage = (Bitmap)pictureBox1.Image;
+            Bitmap bitmapImage = (Bitmap)m_sourceImage.Clone();
+
+            var rawData = bitmapImage.LockBits( new Rectangle( 0, 0, bitmapImage.Width, bitmapImage.Height ), ImageLockMode.ReadWrite, bitmapImage.PixelFormat );
+
+            float alphaF = ((float)trackBar1.Value) * 0.01f;
+            int alpha = (int)(alphaF * 255.0f);
+
+            unsafe
+            {
+                int* pBuffer = (int*)rawData.Scan0.ToPointer();
+
+                for (int y = 0; y < rawData.Height; ++y)
+                {
+                    for (int x = 0; x < rawData.Width; ++x)
+                    {
+                        int pitch = (rawData.Width * y) + x;
+
+                        Color newColor = Color.FromArgb(pBuffer[pitch]);
+
+                        // 요건 알파채널 사용 버전
+                        //pBuffer[pitch] = Color.FromArgb(alpha, newColor.R, newColor.G, newColor.B).ToArgb();
+
+                        // 이건 계산으로
+                        float r = (float)newColor.R / 255.0f;
+                        float g = (float)newColor.G / 255.0f;
+                        float b = (float)newColor.B / 255.0f;
+
+                        float DestR = 1.0f;
+                        float DestG = 0.0f;
+                        float DestB = 0.0f;
+
+                        int finalR = (int)(Math.Min(r * alphaF + DestR * ( 1.0f - alphaF), 1.0f) * 255.0f);
+                        int finalG = (int)(Math.Min(g * alphaF + DestG * ( 1.0f - alphaF), 1.0f) * 255.0f);
+                        int finalB = (int)(Math.Min(b * alphaF + DestB * ( 1.0f - alphaF), 1.0f) * 255.0f);
+
+                        pBuffer[pitch] = Color.FromArgb(255, finalR, finalG, finalB).ToArgb();
+                    }
+                }
+            }
+
+            bitmapImage.UnlockBits(rawData);
+
+            pictureBox1.Image = bitmapImage;
+            pictureBox1.Refresh();
         }
     }
 }

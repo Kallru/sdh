@@ -1,0 +1,8 @@
+D:\WorkRoom\MyWork\sdh\CodeTest\translateBMPtoCustom\source\translateBMPtoCustom\bin\Debug\translateBMPtoCustom.exe
+D:\WorkRoom\MyWork\sdh\CodeTest\translateBMPtoCustom\source\translateBMPtoCustom\bin\Debug\translateBMPtoCustom.pdb
+D:\WorkRoom\MyWork\sdh\CodeTest\translateBMPtoCustom\source\translateBMPtoCustom\obj\x86\Debug\translateBMPtoCustom.csprojResolveAssemblyReference.cache
+D:\WorkRoom\MyWork\sdh\CodeTest\translateBMPtoCustom\source\translateBMPtoCustom\obj\x86\Debug\translateBMPtoCustom.Form1.resources
+D:\WorkRoom\MyWork\sdh\CodeTest\translateBMPtoCustom\source\translateBMPtoCustom\obj\x86\Debug\translateBMPtoCustom.Properties.Resources.resources
+D:\WorkRoom\MyWork\sdh\CodeTest\translateBMPtoCustom\source\translateBMPtoCustom\obj\x86\Debug\translateBMPtoCustom.csproj.GenerateResource.Cache
+D:\WorkRoom\MyWork\sdh\CodeTest\translateBMPtoCustom\source\translateBMPtoCustom\obj\x86\Debug\translateBMPtoCustom.exe
+D:\WorkRoom\MyWork\sdh\CodeTest\translateBMPtoCustom\source\translateBMPtoCustom\obj\x86\Debug\translateBMPtoCustom.pdb
