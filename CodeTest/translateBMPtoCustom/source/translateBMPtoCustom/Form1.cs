@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using imageProcessing;
+using System.Windows;
 
 namespace translateBMPtoCustom
 {
@@ -100,6 +102,8 @@ namespace translateBMPtoCustom
 
                     m_sourceImage = image;
                     pictureBox1.Image = image;
+
+                    // pictureBox1.Image.Save( @"d:\Work\CodeTest\sdh\CodeTest\translateBMPtoCustom\data\test.bmp" );
                 }
             }
         }
@@ -122,12 +126,11 @@ namespace translateBMPtoCustom
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
-            // var bitmapImage = (Bitmap)pictureBox1.Image;
             Bitmap bitmapImage = (Bitmap)m_sourceImage.Clone();
 
             var rawData = bitmapImage.LockBits( new Rectangle( 0, 0, bitmapImage.Width, bitmapImage.Height ), ImageLockMode.ReadWrite, bitmapImage.PixelFormat );
 
-            float alphaF = ((float)trackBar1.Value) * 0.01f;
+            float alphaF = ((float)trackBar1.Value) / 255.0f;
             int alpha = (int)(alphaF * 255.0f);
 
             unsafe
@@ -140,25 +143,12 @@ namespace translateBMPtoCustom
                     {
                         int pitch = (rawData.Width * y) + x;
 
-                        Color newColor = Color.FromArgb(pBuffer[pitch]);
+                        Color sourceColor = Color.FromArgb(pBuffer[pitch]);
 
                         // 요건 알파채널 사용 버전
                         //pBuffer[pitch] = Color.FromArgb(alpha, newColor.R, newColor.G, newColor.B).ToArgb();
 
-                        // 이건 계산으로
-                        float r = (float)newColor.R / 255.0f;
-                        float g = (float)newColor.G / 255.0f;
-                        float b = (float)newColor.B / 255.0f;
-
-                        float DestR = 1.0f;
-                        float DestG = 0.0f;
-                        float DestB = 0.0f;
-
-                        int finalR = (int)(Math.Min(r * alphaF + DestR * ( 1.0f - alphaF), 1.0f) * 255.0f);
-                        int finalG = (int)(Math.Min(g * alphaF + DestG * ( 1.0f - alphaF), 1.0f) * 255.0f);
-                        int finalB = (int)(Math.Min(b * alphaF + DestB * ( 1.0f - alphaF), 1.0f) * 255.0f);
-
-                        pBuffer[pitch] = Color.FromArgb(255, finalR, finalG, finalB).ToArgb();
+                        pBuffer[pitch] = Blending.Alpha( sourceColor, Color.Red, alphaF ).ToArgb();
                     }
                 }
             }
@@ -167,6 +157,61 @@ namespace translateBMPtoCustom
 
             pictureBox1.Image = bitmapImage;
             pictureBox1.Refresh();
+        }
+
+        private void TwoImageBlendingTemplate( Func<Color,Color,Color> blendMode )
+        {
+            Bitmap sourceImage = null;
+            Bitmap destImage = null;
+            if( openFileDialog1.ShowDialog() != DialogResult.OK )
+            {
+                return ;
+            }
+            sourceImage = new Bitmap( openFileDialog1.FileName );
+
+            if( openFileDialog1.ShowDialog() != DialogResult.OK )
+            {
+                return ;
+            }
+            destImage = new Bitmap( openFileDialog1.FileName );
+
+            var dest = destImage.LockBits( new Rectangle( 0, 0, destImage.Width, destImage.Height ), ImageLockMode.ReadOnly, destImage.PixelFormat );
+            var source = sourceImage.LockBits( new Rectangle( 0, 0, sourceImage.Width, sourceImage.Height ), ImageLockMode.ReadWrite, sourceImage.PixelFormat );
+
+            unsafe
+            {
+                int* pDestBuffer = ( int* )dest.Scan0.ToPointer();
+                int* pSourceBuffer = ( int* )source.Scan0.ToPointer();
+
+                for( int y = 0 ; y < source.Height ; ++y )
+                {
+                    for( int x = 0 ; x < source.Width ; ++x )
+                    {
+                        int pitch = ( source.Width * y ) + x;
+
+                        Color sourceColor = Color.FromArgb( pSourceBuffer[pitch] );
+                        Color destColor = Color.FromArgb( pDestBuffer[pitch] );
+
+                        pSourceBuffer[pitch] = blendMode( sourceColor, destColor ).ToArgb();
+                    }
+                }
+            }
+
+            sourceImage.UnlockBits( source );
+            destImage.UnlockBits( dest );
+
+            pictureBox1.Image = sourceImage;
+            pictureBox1.Refresh();
+        }
+
+        private void button3_Click( object sender, EventArgs e )
+        {
+            TwoImageBlendingTemplate( ( source, dest ) => Blending.LinearDodge( source, dest ) );
+        }
+
+        private void button4_Click( object sender, EventArgs e )
+        {
+            TwoImageBlendingTemplate( ( source, dest ) => Blending.ColorDodge( source, dest ) );
         }
     }
 }
