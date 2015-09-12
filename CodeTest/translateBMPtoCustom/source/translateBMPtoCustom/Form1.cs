@@ -17,6 +17,9 @@ namespace translateBMPtoCustom
     public partial class Form1 : Form
     {
         private Bitmap m_sourceImage;
+
+        private Bitmap[] m_testImage = new Bitmap[2];
+
         public Form1()
         {
             InitializeComponent();
@@ -126,6 +129,45 @@ namespace translateBMPtoCustom
 
         private void trackBar1_Scroll(object sender, EventArgs e)
         {
+            Bitmap renderTarget = new Bitmap(m_testImage[0].Width, m_testImage[0].Height);
+
+            var renderTargetData = renderTarget.LockBits(new Rectangle(0, 0, renderTarget.Width, renderTarget.Height), ImageLockMode.WriteOnly, renderTarget.PixelFormat);
+
+            var rawData = m_testImage[0].LockBits(new Rectangle(0, 0, m_testImage[0].Width, m_testImage[0].Height), ImageLockMode.ReadOnly, m_testImage[0].PixelFormat);
+            var dest = m_testImage[1].LockBits(new Rectangle(0, 0, m_testImage[1].Width, m_testImage[1].Height), ImageLockMode.ReadOnly, m_testImage[1].PixelFormat);
+
+            float alphaF = ((float)trackBar1.Value) / 255.0f;
+            int alpha = (int)(alphaF * 255.0f);
+
+            unsafe
+            {
+                int* pBuffer = (int*)rawData.Scan0.ToPointer();
+                int* pDestBuffer = (int*)dest.Scan0.ToPointer();
+
+                int* pTargetBuffer = (int*)renderTargetData.Scan0.ToPointer();
+
+                for (int y = 0; y < rawData.Height; ++y)
+                {
+                    for (int x = 0; x < rawData.Width; ++x)
+                    {
+                        int pitch = (rawData.Width * y) + x;
+
+                        Color sourceColor = Color.FromArgb(pBuffer[pitch]);
+                        Color destColor = Color.FromArgb(pDestBuffer[pitch]);
+
+                        pTargetBuffer[pitch] = Blending.Alpha(sourceColor, destColor, alphaF).ToArgb();
+                    }
+                }
+            }
+
+            m_testImage[0].UnlockBits(rawData);
+            m_testImage[1].UnlockBits(dest);
+            renderTarget.UnlockBits(renderTargetData);
+
+            pictureBox1.Image = renderTarget;
+            pictureBox1.Refresh();
+
+            /*
             Bitmap bitmapImage = (Bitmap)m_sourceImage.Clone();
 
             var rawData = bitmapImage.LockBits( new Rectangle( 0, 0, bitmapImage.Width, bitmapImage.Height ), ImageLockMode.ReadWrite, bitmapImage.PixelFormat );
@@ -156,7 +198,7 @@ namespace translateBMPtoCustom
             bitmapImage.UnlockBits(rawData);
 
             pictureBox1.Image = bitmapImage;
-            pictureBox1.Refresh();
+            pictureBox1.Refresh();*/
         }
 
         private void TwoImageBlendingTemplate( Func<Color,Color,Color> blendMode )
@@ -212,6 +254,21 @@ namespace translateBMPtoCustom
         private void button4_Click( object sender, EventArgs e )
         {
             TwoImageBlendingTemplate( ( source, dest ) => Blending.ColorDodge( source, dest ) );
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            m_testImage[0] = new Bitmap(openFileDialog1.FileName);
+
+            if (openFileDialog1.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            m_testImage[1] = new Bitmap(openFileDialog1.FileName);
         }
     }
 }
