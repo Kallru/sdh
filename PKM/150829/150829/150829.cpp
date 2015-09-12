@@ -15,8 +15,10 @@ TCHAR szTitle[MAX_LOADSTRING];					// 제목 표시줄 텍스트입니다.
 TCHAR szWindowClass[MAX_LOADSTRING];			// 기본 창 클래스 이름입니다.
 
 BYTE*	g_pImageBuffer;
+BYTE*	g_pImage2Buffer;
 
 int	g_Width, g_Height;
+int	g_Width2, g_Height2;
 
 int	g_nFileType;
 
@@ -27,6 +29,64 @@ struct COLOR_
 	UINT b;
 
 };
+
+struct COLOR_F
+{
+	float r;
+	float g;
+	float b;
+
+	COLOR_F(float or, float og, float ob)
+	{
+		r = or;
+		g = og;
+		b = ob;
+	}
+
+	void operator/=(const float f)
+	{
+		r /= f;
+		g /= f;
+		b /= f;
+	}
+
+	void operator*=(const float f)
+	{
+		r *= f;
+		g *= f;
+		b *= f;
+	}
+
+	void Clamp (const float fMin, const float fMax)
+	{
+		if (r < fMin)
+		{
+			r = fMin;
+		}
+		if (g < fMin)
+		{
+			g = fMin;
+		}
+		if (b < fMin)
+		{
+			b = fMin;
+		}
+
+		if (r > fMax)
+		{
+			r = fMax;
+		}
+		if (g > fMax)
+		{
+			g = fMax;
+		}
+		if (b > fMax)
+		{
+			b = fMax;
+		}
+	}
+};
+
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
 ATOM				MyRegisterClass(HINSTANCE hInstance);
 BOOL				InitInstance(HINSTANCE, int);
@@ -34,6 +94,8 @@ LRESULT CALLBACK	WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK	About(HWND, UINT, WPARAM, LPARAM);
 
 bool				ReadImage(LPCWSTR lpFileName);
+bool				ReadAlpha(LPCWSTR lpFileName1, LPCWSTR lpFileName2);
+void				ReadHly(LPCWSTR lpFileName1, BYTE** pSaveLocation,int& nWidth, int& nHeight);
 
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -125,7 +187,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
 
-   if (!ReadImage(L"data/test.bmp"))
+  /* if (!ReadImage(L"data/second.hiy"))
+   {
+	   MessageBoxA(hWnd, "CAN'T LOAD", "FILE LOAD FAIL", MB_OK);
+   }*/
+   if (!ReadAlpha(L"data/img.hiy", L"data/second.hiy"))
    {
 	   MessageBoxA(hWnd, "CAN'T LOAD", "FILE LOAD FAIL", MB_OK);
    }
@@ -192,11 +258,161 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				//nIdx = ((y * g_Width * 3) + x * 3);
 				nIdx = ((y * g_Width * g_nFileType) + x * g_nFileType);
 
-				auto pixel = 
-					RGB(
-					g_pImageBuffer[nIdx + 0],
-					g_pImageBuffer[nIdx + 1],
-					g_pImageBuffer[nIdx + 2]);
+				auto pixel =
+					RGB(0,0,0);
+
+
+				if (g_nFileType == 6)
+				{
+					COLOR_F	color1(0, 0, 0);
+
+					COLOR_F	color2(0, 0, 0);
+	
+					// COLOR = ( 0 ~ 1 )
+
+					COLOR_F finalColor(0, 0, 0);
+
+					/*// 알파 블렌딩
+					{
+						// FINAL COLOR = ( SOURCE COLOR * ALPHA ) + ( DESTINATION COLOR * (1.0F - ALPHA) )
+						// 최종 색상 = 소스 색상 * 알파 + 대상 색상 * (1.0 - 알파)
+
+						nIdx = ((y * g_Width * 3) + x * 3);
+
+						float	fAlpha = 0.3f;
+
+						if (nIdx > (g_Width * g_Height) * 3)
+						{
+							nIdx %= (g_Width * g_Height) * 3;
+						}
+
+						color1.r = g_pImageBuffer[nIdx + 0];
+						color1.g = g_pImageBuffer[nIdx + 1];
+						color1.b = g_pImageBuffer[nIdx + 2];
+
+						color1 /= 255.0f;
+
+						color1 *= fAlpha;
+
+						nIdx = ((y * g_Width * 3) + x * 3);
+
+						if (nIdx > (g_Width2 * g_Height2) * 3)
+						{
+							nIdx %= (g_Width2 * g_Height2) * 3;
+						}
+
+						color2.r = g_pImage2Buffer[nIdx + 0];
+						color2.g = g_pImage2Buffer[nIdx + 1];
+						color2.b = g_pImage2Buffer[nIdx + 2];
+
+						color2 /= 255.0f;
+
+						color2 *= (1.0f - fAlpha);
+
+						finalColor.r = color1.r + color2.r;
+						finalColor.g = color1.g + color2.g;
+						finalColor.b = color1.b + color2.b;
+
+					}*/
+
+					/*// 리니어 닷지
+					// FINAL COLOR = SOURCE COLOR + DESTINATION COLOR
+					{
+					nIdx = ((y * g_Width * 3) + x * 3);
+
+					if (nIdx > (g_Width * g_Height) * 3)
+					{
+					nIdx %= (g_Width * g_Height) * 3;
+					}
+
+					color1.r = g_pImageBuffer[nIdx + 0];
+					color1.g = g_pImageBuffer[nIdx + 1];
+					color1.b = g_pImageBuffer[nIdx + 2];
+
+					color1 /= 255.0f;
+
+					nIdx = ((y * g_Width * 3) + x * 3);
+
+					if (nIdx > (g_Width2 * g_Height2) * 3)
+					{
+					nIdx %= (g_Width2 * g_Height2) * 3;
+					}
+
+					color2.r = g_pImage2Buffer[nIdx + 0];
+					color2.g = g_pImage2Buffer[nIdx + 1];
+					color2.b = g_pImage2Buffer[nIdx + 2];
+
+					color2 /= 255.0f;
+
+					finalColor.r = color1.r + color2.r;
+					finalColor.g = color1.g + color2.g;
+					finalColor.b = color1.b + color2.b;
+
+					}*/
+
+					// 색상 닷지
+					// FINAL COLOR = SOURCE COLOR / ( 1 -  DESTINATION COLOR )
+					{
+						nIdx = ((y * g_Width * 3) + x * 3);
+
+						if (nIdx > (g_Width * g_Height) * 3)
+						{
+							nIdx %= (g_Width * g_Height) * 3;
+						}
+
+						color1.r = g_pImageBuffer[nIdx + 0];
+						color1.g = g_pImageBuffer[nIdx + 1];
+						color1.b = g_pImageBuffer[nIdx + 2];
+
+						color1 /= 255.0f;
+
+						nIdx = ((y * g_Width * 3) + x * 3);
+
+						if (nIdx > (g_Width2 * g_Height2) * 3)
+						{
+							nIdx %= (g_Width2 * g_Height2) * 3;
+						}
+
+						color2.r = g_pImage2Buffer[nIdx + 0];
+						color2.g = g_pImage2Buffer[nIdx + 1];
+						color2.b = g_pImage2Buffer[nIdx + 2];
+
+						color2 /= 255.0f;
+
+						finalColor.r = color1.r / ( 1.0f - color2.r );
+						finalColor.g = color1.g / ( 1.0f - color2.g );
+						finalColor.b = color1.b / ( 1.0f - color2.b );
+					}
+
+					/*if (finalColor.r > 1.0f)
+					{
+						finalColor.r = 1.0f;
+					}
+					if (finalColor.g > 1.0f)
+					{
+						finalColor.g = 1.0f;
+					}
+					if (finalColor.b > 1.0f)
+					{
+						finalColor.b = 1.0f;
+					}*/
+
+					finalColor.Clamp(0.0f, 1.0f);
+
+					pixel =
+						RGB(
+						(finalColor.r*255.0f),
+						(finalColor.g*255.0f),
+						(finalColor.b*255.0f));
+				}
+				else
+				{
+					pixel =
+						RGB(
+						g_pImageBuffer[nIdx + 0],
+						g_pImageBuffer[nIdx + 1],
+						g_pImageBuffer[nIdx + 2]);
+				}
 									
 				SetPixel(hdc, nStartX+x, nStartY+y, pixel);
 			}
@@ -262,7 +478,7 @@ bool	ReadImage(LPCWSTR lpFileName)
 		return false;
 	}
 
-	HANDLE hRead = CreateFile(lpFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE hRead = NULL;
 
 	DWORD	nResultSize = 0;
 	BYTE*	Temp; 
@@ -271,7 +487,7 @@ bool	ReadImage(LPCWSTR lpFileName)
 	{
 	case 3:
 	{
-			  BYTE	header[11] = { 0, };
+			 /* BYTE	header[11] = { 0, };
 
 			  if (ReadFile(hRead, &header, 11, &nResultSize, NULL))
 			  {
@@ -301,13 +517,17 @@ bool	ReadImage(LPCWSTR lpFileName)
 				  g_pImageBuffer[i] = Temp[i * 4];
 			  }
 
-			  delete[] Temp;
+			  delete[] Temp;*/
+
+			  ReadHly(lpFileName, &g_pImageBuffer,g_Width,g_Height);
 
 			  break;
 	}
 
 	case 1:
 	{
+			  hRead = CreateFile(lpFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+
 			  BYTE	header[40] = { 0, };
 
 			  int nPixelData = 0;
@@ -351,18 +571,18 @@ bool	ReadImage(LPCWSTR lpFileName)
 
 				  }
 
-				  Temp = new	BYTE[sizeof(BYTE)* g_Width * g_Height * 4];
-				  ZeroMemory(Temp, sizeof(BYTE)* g_Width * g_Height * 4);
+				  Temp = new	BYTE[sizeof(BYTE)* g_Width * g_Height * 12];
+				  ZeroMemory(Temp, sizeof(BYTE)* g_Width * g_Height * 12);
 
 				  // READ PIXEL
-				  if (ReadFile(hRead, Temp, g_Width * g_Height * 4, &nResultSize, NULL))
+				  if (ReadFile(hRead, Temp, g_Width * g_Height * 12, &nResultSize, NULL))
 				  {
 					  int a = 0;
 				  }
 			  }
 
-			  g_pImageBuffer = new	BYTE[sizeof(BYTE)* g_Width * g_Height * 4];
-			  ZeroMemory(g_pImageBuffer, sizeof(BYTE)* g_Width * g_Height * 4);
+			  g_pImageBuffer = new	BYTE[sizeof(BYTE)* g_Width * g_Height * 12];
+			  ZeroMemory(g_pImageBuffer, sizeof(BYTE)* g_Width * g_Height * 12);
 
 			  for (int i = 0; i < g_Width * g_Height; ++i)
 			  {
@@ -380,7 +600,10 @@ bool	ReadImage(LPCWSTR lpFileName)
 					  &color,
 					  sizeof(color));*/
 
-				  g_pImageBuffer[i] = Temp[i * 4];
+				  g_pImageBuffer[i + 0] = Temp[i * 4 + 8];
+				  g_pImageBuffer[i + 1] = Temp[i * 4 + 4];
+				  g_pImageBuffer[i + 2] = Temp[i * 4 + 0];
+
 			  }
 
 			  delete[] Temp;
@@ -393,4 +616,56 @@ bool	ReadImage(LPCWSTR lpFileName)
 	CloseHandle(hRead);
 
 	return	true;
+}
+
+bool	ReadAlpha(LPCWSTR lpFileName1, LPCWSTR lpFileName2)
+{
+	g_nFileType = 6;
+
+	ReadHly(lpFileName1, &g_pImageBuffer,g_Width,g_Height);
+	ReadHly(lpFileName2, &g_pImage2Buffer, g_Width2, g_Height2);
+
+	return	true;
+}
+
+void	ReadHly(LPCWSTR lpFileName, BYTE** pSaveLocation, int& nWidth, int& nHeight)
+{
+	DWORD	nResultSize = 0;
+	BYTE*	Temp;
+
+	HANDLE hRead = CreateFile(lpFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+
+	BYTE	header[11] = { 0, };
+
+	if (ReadFile(hRead, &header, 11, &nResultSize, NULL))
+	{
+		char tag[3];
+
+		CopyMemory((void*)&tag, &header[0], 3);
+
+		CopyMemory((void*)&nWidth, &header[3], 4);
+		CopyMemory((void*)&nHeight, &header[7], 4);
+
+		Temp = new	BYTE[sizeof(BYTE)* nWidth * nHeight * 12];
+		ZeroMemory(Temp, sizeof(BYTE)* nWidth * nHeight * 12);
+
+		if (ReadFile(hRead, Temp, nWidth * nHeight * 12, &nResultSize, NULL) == true)
+		{
+			int a = 0;
+		}
+	}
+
+	*pSaveLocation = new	BYTE[sizeof(BYTE)* nWidth * nHeight * 3];
+	ZeroMemory(*pSaveLocation, sizeof(BYTE)* nWidth * nHeight * 3);
+
+	nResultSize = nResultSize / 4;
+
+	for (int i = 0; i < nResultSize; ++i)
+	{
+		(*pSaveLocation)[i] = Temp[i * 4];
+	}
+
+	delete[] Temp;
+
+	CloseHandle(hRead);
 }

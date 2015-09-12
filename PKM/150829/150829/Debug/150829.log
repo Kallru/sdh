@@ -1,21 +1,21 @@
-﻿빌드 시작: 2015-09-11 오후 7:53:04
-     1>2 노드의 "C:\Users\Skill\Desktop\SDHGIT\trunk\PKM\150829\150829\150829.vcxproj" 프로젝트(Build 대상)입니다.
+﻿빌드 시작: 2015-09-12 오후 2:05:24
+     1>2 노드의 "C:\Users\Skill\Desktop\SDHSSKILLGIT\sdh\PKM\150829\150829\150829.vcxproj" 프로젝트(Build 대상)입니다.
      1>ClCompile:
          D:\Data\VS_2013\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\150829.pch" /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt 150829.cpp
          150829.cpp
-     1>c:\users\skill\desktop\sdhgit\trunk\pkm\150829\150829\150829.cpp(247): warning C4996: 'wcstombs': This function or variable may be unsafe. Consider using wcstombs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\skill\desktop\sdhsskillgit\sdh\pkm\150829\150829\150829.cpp(463): warning C4996: 'wcstombs': This function or variable may be unsafe. Consider using wcstombs_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  d:\data\vs_2013\vc\include\stdlib.h(575) : 'wcstombs' 선언을 참조하십시오.
-     1>c:\users\skill\desktop\sdhgit\trunk\pkm\150829\150829\150829.cpp(250): warning C4996: '_splitpath': This function or variable may be unsafe. Consider using _splitpath_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+     1>c:\users\skill\desktop\sdhsskillgit\sdh\pkm\150829\150829\150829.cpp(466): warning C4996: '_splitpath': This function or variable may be unsafe. Consider using _splitpath_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  d:\data\vs_2013\vc\include\stdlib.h(854) : '_splitpath' 선언을 참조하십시오.
-     1>c:\users\skill\desktop\sdhgit\trunk\pkm\150829\150829\150829.cpp(288): warning C4805: '==' : 연산에 'BOOL' 형식과 'bool' 형식을 함께 사용하는 것은 안전하지 않습니다.
-     1>c:\users\skill\desktop\sdhgit\trunk\pkm\150829\150829\150829.cpp(299): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
+     1>c:\users\skill\desktop\sdhsskillgit\sdh\pkm\150829\150829\150829.cpp(652): warning C4805: '==' : 연산에 'BOOL' 형식과 'bool' 형식을 함께 사용하는 것은 안전하지 않습니다.
+     1>c:\users\skill\desktop\sdhsskillgit\sdh\pkm\150829\150829\150829.cpp(663): warning C4018: '<' : signed 또는 unsigned가 일치하지 않습니다.
        Link:
-         D:\Data\VS_2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Skill\Desktop\SDHGIT\trunk\PKM\150829\Debug\150829.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Skill\Desktop\SDHGIT\trunk\PKM\150829\Debug\150829.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Skill\Desktop\SDHGIT\trunk\PKM\150829\Debug\150829.lib" /MACHINE:X86 Debug\150829.res
+         D:\Data\VS_2013\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Skill\Desktop\SDHSSKILLGIT\sdh\PKM\150829\Debug\150829.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Skill\Desktop\SDHSSKILLGIT\sdh\PKM\150829\Debug\150829.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Skill\Desktop\SDHSSKILLGIT\sdh\PKM\150829\Debug\150829.lib" /MACHINE:X86 Debug\150829.res
          Debug\150829.obj
          Debug\stdafx.obj
-         150829.vcxproj -> C:\Users\Skill\Desktop\SDHGIT\trunk\PKM\150829\Debug\150829.exe
-     1>"C:\Users\Skill\Desktop\SDHGIT\trunk\PKM\150829\150829\150829.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
+         150829.vcxproj -> C:\Users\Skill\Desktop\SDHSSKILLGIT\sdh\PKM\150829\Debug\150829.exe
+     1>"C:\Users\Skill\Desktop\SDHSSKILLGIT\sdh\PKM\150829\150829\150829.vcxproj" 프로젝트를 빌드했습니다(Build 대상).
 
 빌드했습니다.
 
-경과 시간: 00:00:01.77
+경과 시간: 00:00:01.20
