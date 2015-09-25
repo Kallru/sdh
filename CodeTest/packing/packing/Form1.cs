@@ -27,6 +27,7 @@ namespace packing
             InitializeComponent();
         }
 
+        // "열기" 이벤트
         private void button3_Click(object sender, EventArgs e)
         {
             openFileDialog1.Filter = "*.pack|*.pack";
@@ -61,6 +62,7 @@ namespace packing
             }
         }
 
+        // "추가" 버튼 이벤트
         private void button1_Click(object sender, EventArgs e)
         {
             if( openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK )
@@ -69,6 +71,7 @@ namespace packing
             }
         }
 
+        // "저장" 이벤트
         private void button2_Click(object sender, EventArgs e)
         {
             if( listBox1.Items.Count == 0 )
@@ -119,6 +122,7 @@ namespace packing
             }
         }
 
+        // "풀기" 이벤트
         private void button4_Click(object sender, EventArgs e)
         {
             if (folderBrowserDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
