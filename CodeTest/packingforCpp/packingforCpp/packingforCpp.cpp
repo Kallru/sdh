@@ -16,7 +16,7 @@ byte* OpenFile(std::string pFileName, int* pSize )
 	memset(pBuffer, 0, fileSize);
 
 	DWORD size;
-	ReadFile(hFile, &pBuffer, sizeof(char)*fileSize, &size, NULL);
+	ReadFile(hFile, pBuffer, sizeof(char)*fileSize, &size, NULL);
 
 	auto error = GetLastError();
 
@@ -25,7 +25,7 @@ byte* OpenFile(std::string pFileName, int* pSize )
 	return pBuffer;
 }
 
-void Pack()
+void Pack( const std::string& packName ) 
 {
 	std::string fileNameA("first.hiy");
 	std::string fileNameB("img.bmp");
@@ -42,7 +42,7 @@ void Pack()
 
 	// 파일 합치기
 	{
-		HANDLE hPackFile = CreateFile("test.bin", GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+		HANDLE hPackFile = CreateFile(packName.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 		DWORD size(0);
 
@@ -103,11 +103,11 @@ void Unpack( std::string filename )
 		// 바이너리 데이터
 		byte* pBuffer = new byte[bufferSize];
 		memset(pBuffer, 0, bufferSize);
-		ReadFile(hFile, &pBuffer, sizeof(byte)*bufferSize, &size, NULL);
+		ReadFile(hFile, pBuffer, sizeof(byte)*bufferSize, &size, NULL);
 
 		// 실제 파일 생성
 		HANDLE hHandle = CreateFile(fileName.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		WriteFile(hHandle, &pBuffer, bufferSize, &size, NULL);
+		WriteFile(hHandle, pBuffer, bufferSize, &size, NULL);
 		CloseHandle(hHandle);
 	}
 
@@ -116,8 +116,8 @@ void Unpack( std::string filename )
 
 int main()
 {
-	//Unpack("test.bin");
-	Pack();
+	Unpack("test.bin");
+	//Pack("test.bin");
     return 0;
 }
 
