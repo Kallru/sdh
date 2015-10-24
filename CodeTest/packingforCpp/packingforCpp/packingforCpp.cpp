@@ -116,8 +116,8 @@ void Unpack( std::string filename )
 
 int main()
 {
-	Unpack("test.bin");
-	//Pack("test.bin");
+	//Unpack("test.bin");
+	Pack("test.bin");
     return 0;
 }
 
