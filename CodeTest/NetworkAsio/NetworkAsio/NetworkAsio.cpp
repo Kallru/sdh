@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
 	boost::asio::write(socket, boost::asio::buffer(request, request_length) );
 
 	char reply[MAX_LENGTH];
+	::memset(reply, 0, MAX_LENGTH);
 	size_t reply_length = boost::asio::read(socket, boost::asio::buffer(reply, request_length));
 	std::cout << "Reply is: ";
 	std::cout.write(reply, reply_length);
